@@ -1,11 +1,14 @@
-import { getDocs, query, collection } from 'firebase/firestore';
+import { getDocs, query, collection, addDoc } from 'firebase/firestore';
 import { db } from './firestore';
 import { useEffect, useState } from 'react';
 import './App.css';
 
 
 const App = () => {
-  const [hamsters, setHamsters] = useState([])
+  const [hamsters, setHamsters] = useState([]);
+  const [name, setName] = useState('');
+  const [gender, setGender] = useState('');
+  const [birthDate, setBirthDate] = useState('');
 
   useEffect(() => {
     getData();
@@ -22,9 +25,52 @@ const App = () => {
             setHamsters(newData);
           });
   }
+
+  const addData = async(e) => {
+    e.preventDefault();
+    // get selected gender
+    const genderDropdown = document.getElementById('gender-dropdown')
+    
+    await addDoc(collection(db, "hamsters"), {
+      name: name,
+      gender: gender.length > 0 ? gender : genderDropdown.value,
+      birth_date: birthDate,
+      id: "hamster-"+1,
+      family: "",
+    });
+  }
   
   return (
     <>
+      <form method='post' onSubmit={addData}>
+        <label>Name</label>
+        <input 
+          type='text' 
+          name='name' 
+          value={name} 
+          onChange={(e) => setName(e.target.value)}
+        /><br />
+        <label>gender</label>
+        <select 
+          id='gender-dropdown'
+          name="gender"
+          onChange={(e) => 
+            setGender(e.target.value)
+          }
+        >
+          <option value="male" selected>Male</option>
+          <option value="female">Female</option>
+        </select><br />
+        <label>Birth Date</label>
+        <input 
+          type='date' 
+          name='birthDate'
+          value={birthDate} 
+          onChange={(e) => setBirthDate(e.target.value)}
+        /><br />
+        <input type='submit' value='Submit'/>
+      </form>
+      <br/><br />
       <table className="table-fixed">
         <thead>
           <tr>
@@ -36,7 +82,6 @@ const App = () => {
         <tbody>
           {
             hamsters.map(hamster => {
-              console.log(hamster)
               return (
                 <>
                   <tr>
