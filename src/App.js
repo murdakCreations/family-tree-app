@@ -1,6 +1,7 @@
 import { getDocs, query, collection } from 'firebase/firestore';
 import { db } from './firestore';
 import { useEffect, useState } from 'react';
+import './App.css';
 
 
 const App = () => {
@@ -8,6 +9,7 @@ const App = () => {
 
   useEffect(() => {
     getData();
+    // eslint-disable-next-line
   }, []);
 
   const getData = async() => {
@@ -17,36 +19,37 @@ const App = () => {
             const newData = querySnapshot.docs
               .map((doc) => ({...doc.data()}));
 
-            console.log(newData)
-            newData.forEach(data => {
-              setHamsters(
-                [
-                  ...hamsters,
-                  {
-                    name: data.name,
-                    gender: data.gender,
-                    birthdate: data.birth_date,
-                  }
-                ]
-              );
-            });
-            
+            setHamsters(newData);
           });
   }
   
   return (
     <>
-      {
-        hamsters.map(hamster => {
-          return (
-            <>
-              <div>{hamster.name}</div>
-              <div>{hamster.gender}</div>
-              <div>{hamster.birthdate}</div>
-            </>
-          )
-        })
-      }
+      <table className="table-fixed">
+        <thead>
+          <tr>
+            <th className='w-1/3'>Name</th>
+            <th className='w-1/3'>Gender</th>
+            <th className='w-1/3'>Birth Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            hamsters.map(hamster => {
+              console.log(hamster)
+              return (
+                <>
+                  <tr>
+                    <td>{hamster.name}</td>
+                    <td>{hamster.gender}</td>
+                    <td>{hamster.birth_date}</td>
+                  </tr>
+                </>
+              )
+            })
+          }
+        </tbody>
+      </table>
     </>
   );
 }
